@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>finquorum — pending proposals</title>
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 900px; margin: 2rem auto; color: #222; }
+    h1 { font-size: 1.3rem; }
+    .proposal { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+    .proposal pre { background: #f6f6f6; padding: 0.5rem; border-radius: 4px; overflow-x: auto; }
+    button { padding: 0.4rem 0.9rem; margin-right: 0.5rem; border-radius: 6px; border: 1px solid #ccc; cursor: pointer; }
+    .approve { background: #e6f4ea; }
+    .reject { background: #fbe9e7; }
+    .revert { background: #fff3e0; }
+    .status-approved { color: #1a7f37; }
+    .status-rejected { color: #b42318; }
+    .status-reverted { color: #9a6700; }
+    small { color: #888; }
+  </style>
+</head>
+<body>
+  <h1>finquorum — proposals</h1>
+  <p><small>Pending proposals require human approval here or via the CLI. No MCP tool can approve.</small></p>
+
+  <h2>Pending ({{ pending|length }})</h2>
+  <div id="pending-list">
+  {% for p in pending %}
+    <div class="proposal">
+      <strong>#{{ p.id }} — {{ p.type }}</strong>
+      <pre>{{ dumps(p.diff) }}</pre>
+      <form hx-post="/approve/{{ p.id }}" hx-target="body" style="display:inline">
+        <button class="approve" type="submit">Approve</button>
+      </form>
+      <form hx-post="/reject/{{ p.id }}" hx-target="body" style="display:inline">
+        <button class="reject" type="submit">Reject</button>
+      </form>
+    </div>
+  {% else %}
+    <p><small>Nothing pending.</small></p>
+  {% endfor %}
+  </div>
+
+  <h2>Recent decisions</h2>
+  {% for p in decided %}
+    <div class="proposal">
+      <strong>#{{ p.id }} — {{ p.type }}</strong>
+      <span class="status-{{ p.status }}">{{ p.status }}</span>
+      <pre>{{ dumps(p.diff) }}</pre>
+      {% if p.status == 'approved' %}
+      <form hx-post="/revert/{{ p.id }}" hx-target="body" style="display:inline">
+        <button class="revert" type="submit">Revert</button>
+      </form>
+      {% endif %}
+    </div>
+  {% endfor %}
+</body>
+</html>

@@ -1,0 +1,34 @@
+[project]
+name = "finquorum"
+version = "0.1.0"
+description = "Agent-native personal finance ledger with a propose -> human-approve -> apply loop, exposed as an MCP server."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+    "mcp>=2.0",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+    "httpx>=0.27",
+    "jinja2>=3.1",
+    "python-multipart>=0.0.9",
+]
+
+[project.scripts]
+finquorum = "finquorum.cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/finquorum"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
